@@ -1,0 +1,310 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(uuid())
+  phone         String        @unique
+  email         String?       @unique
+  pin_hash      String?
+  name          String?
+  is_active     Boolean       @default(true)
+  failed_debits Int           @default(0)
+  agent_id      String?
+  last_login    DateTime?
+  deleted_at    DateTime?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+
+  savingsPlans  SavingsPlan[]
+  transactions  Transaction[]
+  sessions      UserSession[]
+  confirmationRequests PaymentConfirmationRequest[]
+  reminderLogs  ReminderLog[]
+  agent         Agent?        @relation("AgentUser")
+  referred_by   Agent?        @relation("AgentReferrals", fields: [agent_id], references: [id])
+
+  @@map("users")
+}
+
+model SavingsPlan {
+  id             String        @id @default(uuid())
+  user_id        String
+  name           String?
+  daily_amount   Decimal       @db.Decimal(12, 2)
+  duration       Int           @default(31)
+  status         PlanStatus    @default(ACTIVE)
+  start_date     DateTime      @default(now())
+  end_date       DateTime
+  days_completed Int           @default(0)
+  payout_account String?
+  payout_method  String?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  user           User          @relation(fields: [user_id], references: [id])
+  transactions   Transaction[]
+  reminderLogs   ReminderLog[]
+
+  @@map("savings_plans")
+}
+
+model Transaction {
+  id          String            @id @default(uuid())
+  user_id     String
+  plan_id     String?
+  type        TransactionType
+  amount      Decimal           @db.Decimal(12, 2)
+  amount_paid Decimal?          @db.Decimal(12, 2)
+  fee         Decimal?          @db.Decimal(12, 2)
+  net_amount  Decimal?          @db.Decimal(12, 2)
+  status      TransactionStatus @default(PENDING)
+  reference   String            @unique
+  korapay_ref  String?           @map("korapay_ref")
+  description String?
+  retry_count Int               @default(0)
+  metadata    Json?
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+
+  user        User              @relation(fields: [user_id], references: [id])
+  plan        SavingsPlan?      @relation(fields: [plan_id], references: [id])
+  confirmationRequests PaymentConfirmationRequest[]
+
+  @@map("transactions")
+}
+
+model PaymentConfirmationRequest {
+  id                String                    @id @default(uuid())
+  transaction_id    String
+  user_id           String
+  korapay_reference String
+  status            ConfirmationRequestStatus @default(PENDING_REVIEW)
+  notes             String?                   @db.Text
+  reviewed_by       String?
+  reviewed_at       DateTime?
+  created_at        DateTime                  @default(now())
+  updated_at        DateTime                  @updatedAt
+
+  transaction       Transaction               @relation(fields: [transaction_id], references: [id])
+  user              User                      @relation(fields: [user_id], references: [id])
+
+  @@index([status])
+  @@index([user_id])
+  @@map("payment_confirmation_requests")
+}
+
+model WebhookPayment {
+  id                  String    @id @default(uuid())
+  korapay_ref         String    @unique
+  amount              Decimal   @db.Decimal(12, 2)
+  amount_paid         Decimal?  @db.Decimal(12, 2)
+  fee                 Decimal?  @db.Decimal(12, 2)
+  net_amount          Decimal?  @db.Decimal(12, 2)
+  currency            String    @default("GHS")
+  status              String
+  payment_method      String?
+  event_type          String?
+  payload             Json?
+  used                Boolean   @default(false)
+  linked_transaction_id String?
+  approved_by_admin   String?
+  approved_at         DateTime?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  @@index([used])
+  @@map("webhook_payments")
+}
+
+model UserSession {
+  id         String   @id @default(uuid())
+  user_id    String
+  token_hash String   @unique
+  ip_address String?
+  user_agent String?
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model OtpCode {
+  id         String   @id @default(uuid())
+  phone      String
+  code       String
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  @@map("otp_codes")
+}
+
+model Agent {
+  id              String   @id @default(uuid())
+  user_id         String   @unique
+  commission_rate Decimal  @db.Decimal(5, 2) @default(0.5)
+  total_referrals Int      @default(0)
+  total_earned    Decimal  @db.Decimal(12, 2) @default(0)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+
+  user      User   @relation("AgentUser", fields: [user_id], references: [id])
+  referrals User[] @relation("AgentReferrals")
+
+  @@map("agents")
+}
+
+model Admin {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  password_hash   String
+  phone           String
+  name            String
+  role            AdminRole   @default(ADMIN)
+  profile_picture String?
+  is_active       Boolean     @default(true)
+  last_login      DateTime?
+  otp_enabled     Boolean     @default(true)
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+
+  audit_logs      AdminAuditLog[]
+  sessions        AdminSession[]
+
+  @@map("admins")
+}
+
+model AdminSession {
+  id         String   @id @default(uuid())
+  admin_id   String
+  token_hash String
+  ip_address String?
+  user_agent String?
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  admin      Admin    @relation(fields: [admin_id], references: [id], onDelete: Cascade)
+
+  @@map("admin_sessions")
+}
+
+model AdminOtpCode {
+  id         String   @id @default(uuid())
+  admin_id   String
+  code       String
+  expires_at DateTime
+  used       Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  @@map("admin_otp_codes")
+}
+
+model AdminAuditLog {
+  id         String   @id @default(uuid())
+  admin_id   String
+  action     String
+  target     String?
+  details    Json?
+  ip_address String?
+  created_at DateTime @default(now())
+
+  admin      Admin    @relation(fields: [admin_id], references: [id])
+
+  @@map("admin_audit_logs")
+}
+
+model AdminNotification {
+  id         String             @id @default(uuid())
+  type       NotificationType
+  title      String
+  message    String             @db.Text
+  is_read    Boolean            @default(false)
+  metadata   Json?
+  created_at DateTime           @default(now())
+
+  @@map("admin_notifications")
+}
+
+model ReminderLog {
+  id              String    @id @default(uuid())
+  user_id         String
+  plan_id         String?   
+  type            String
+  message         String    @db.Text
+  delivery_status String    @default("PENDING")
+  sent_at         DateTime?
+  metadata        Json?
+  created_at      DateTime  @default(now())
+
+  user            User      @relation(fields: [user_id], references: [id])
+  plan            SavingsPlan? @relation(fields: [plan_id], references: [id])
+
+  @@map("reminder_logs")
+}
+
+model PlatformSettings {
+  id                  String   @id @default(uuid())
+  platform_name       String   @default("SusuPal")
+  commission_days     Int      @default(1)
+  max_retry_attempts  Int      @default(3)
+  grace_period_days   Int      @default(2)
+  timezone            String   @default("Africa/Accra")
+  escrow_balance      Decimal  @db.Decimal(15, 2) @default(0)
+  updated_at          DateTime @updatedAt
+
+  @@map("platform_settings")
+}
+
+enum PlanStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum TransactionType {
+  CONTRIBUTION
+  PAYOUT
+  COMMISSION
+  AGENT_COMMISSION
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REVERSED
+  CANCELLED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  SUPPORT_AGENT
+}
+
+enum ConfirmationRequestStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  FAILED_PAYOUT
+  FAILED_PAYMENT
+  HIGH_WITHDRAWAL
+  LIQUIDITY_WARNING
+  SUSPICIOUS_ACTIVITY
+  NEW_REGISTRATION
+  SYSTEM
+}

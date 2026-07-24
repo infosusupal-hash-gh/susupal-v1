@@ -1,0 +1,39 @@
+{
+  "name": "susu-platform-backend",
+  "version": "1.0.0",
+  "description": "Digital Susu Savings Platform API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "seed:admin": "node src/scripts/seedAdmin.js"
+    ,"test": "node --test"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.0",
+    "axios": "^1.6.0",
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^4.15.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.0",
+    "node-cron": "^3.0.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.8.0",
+    "nodemon": "^3.0.2",
+    "prisma": "^5.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,1 @@
+SHOW CREATE TABLE users; SHOW CREATE TABLE savings_plans;

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./images/favicon.ico" type="image/x-icon">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>SusuPal - Coming Soon</title>
+    <style>
+      :root {
+        --bg: #f8f7f4;
+        --ink: #1a1a1a;
+        --green: #047857;
+        --green-lt: #065f46;
+        --stone: #c8bfb0;
+        --muted: #6e6e6e;
+        --card-bg: #ffffff;
+        --dark-card: #012c21;
+        --radius: 12px;
+
+        --blue: #2563eb;
+        --teal: #0ea5e9;
+        --lime: #84cc16;
+        --dark: #07080d;
+        --dark2: #0f1119;
+        --dark3: #161924;
+        --mid: #1e2235;
+        --border: rgba(255, 255, 255, 0.07);
+        --text: #e8eaf2;
+
+        --grad3: linear-gradient(135deg, #10b981 0%, #84cc16 100%);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--text);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--lime);
+      border-radius: 9px;
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: #f8fafc;
+        color: #0f172a;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      section {
+        padding: 100px 0;
+      }
+
+      @media (max-width: 768px) {
+        section {
+          padding: 70px 0;
+        }
+      }
+
+      img {
+        width: 100%;
+        display: block;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 14px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+
+      .btn-primary {
+        background: #22c55e;
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: #16a34a;
+      }
+
+      .btn-secondary {
+        border: 2px solid #0f172a;
+        color: #0f172a;
+      }
+
+      .btn-secondary:hover {
+        background: #0f172a;
+        color: #fff;
+      }
+
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: white;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+      }
+
+      .logo img {
+        width: 150px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 30px;
+      }
+
+      .nav-links a {
+          border: green 1px solid;
+          padding: 10px 30px 10px 30px;
+          border-radius: 50px;
+        text-decoration: none;
+        color: #015a0d;
+        font-weight: 500;
+      }
+
+      .hero {
+        padding-top: 180px;
+      }
+
+      .hero-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+
+      .hero h1 {
+        font-size: 4rem;
+        line-height: 1.1;
+        margin-bottom: 20px;
+      }
+
+      .hero p {
+        margin-bottom: 30px;
+        color: #475569;
+      }
+
+      .hero-image img {
+        border-radius: 25px;
+      }
+
+      .stats {
+        background: #fff;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+
+      .stat {
+        text-align: center;
+        padding: 40px;
+        background: #f8fafc;
+        border-radius: 20px;
+      }
+
+      .stat h2 {
+        color: #22c55e;
+        font-size: 2.5rem;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .section-title h2 {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+
+      .card img {
+        height: 220px;
+        object-fit: cover;
+      }
+
+      .card-content {
+        padding: 25px;
+      }
+
+      .card-content h3 {
+        margin-bottom: 10px;
+      }
+
+      .how-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+
+      .step {
+        background: rgb(241, 241, 241);
+        padding: 40px;
+        margin-top: 20px;
+        border-radius: 20px;
+        text-align: center;
+      }
+
+      .step-number {
+        width: 60px;
+        height: 60px;
+        background: #22c55e;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 700;
+        margin: auto auto 20px;
+      }
+
+      .app-showcase {
+        background: #00490c;
+        color: white;
+      }
+
+      .app-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        align-items: center;
+      }
+
+      .app-grid img {
+        z-index: 1;
+        position: absolute;
+        width: 810px;
+        margin-top: -380px;
+        border-radius: 25px;
+      }
+
+      .testimonials {
+        background: white;
+      }
+
+      .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+
+      .testimonial {
+        background: #f8fafc;
+        padding: 30px;
+        border-radius: 20px;
+      }
+
+      .cta {
+        text-align: center;
+        background: #22c55e;
+        color: white;
+      }
+
+      .cta h2 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      .footer {
+        background: var(--green-lt);
+        color: white;
+        padding: 70px 0;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 40px;
+      }
+
+      .footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: 1s;
+      }
+
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 768px) {
+        .navbar {
+          position: sticky;
+          top: 0;
+        }
+
+        .nav-content {
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          padding: 14px 0;
+        }
+
+        .nav-links {
+          width: 100%;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 8px 16px;
+        }
+
+        .hero {
+          padding-top: 110px;
+        }
+
+        .hero-content {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .hero h1 {
+          font-size: 2.1rem;
+          line-height: 1.15;
+        }
+
+        .hero p {
+          font-size: 1rem;
+        }
+
+        .hero-image {
+          margin-top: 8px;
+        }
+
+        .hero-image img {
+          width: 100%;
+          height: auto;
+          border-radius: 20px;
+        }
+
+        .btn {
+          width: 100%;
+          text-align: center;
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+
+        .footer {
+          padding: 50px 0;
+        }
+
+        .footer-grid {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .container {
+          width: 92%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .hero {
+          padding-top: 96px;
+        }
+
+        .hero h1 {
+          font-size: 1.8rem;
+        }
+
+        .nav-links {
+          gap: 8px 12px;
+        }
+
+        .nav-links a {
+          padding: 8px 16px;
+        }
+
+        .btn {
+          padding: 12px 20px;
+        }
+      }
+    </style>
+    <style>
+      .containerq {
+        text-align: center;
+        padding: 200px;
+        min-height: 100vh;
+        justify-content: center;    
+        align-items: center;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        align-content: stretch;
+      }
+
+      .logo img {
+        width: 150px;
+      }
+
+      .tagline {
+        color: #003f18;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+      }
+
+      h1 {
+        color: #02630a;
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      p {
+        color: #009921;
+        line-height: 1.7;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+      }
+
+      .badge {
+        display: inline-block;
+        background: #01af18;
+        color: rgb(255, 255, 255);
+        padding: 10px 20px;
+        border-radius: 30px;
+        margin-bottom: 25px;
+        font-weight: 600;
+      }
+
+      .features {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 35px;
+      }
+
+      .feature {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px 18px;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+      }
+
+      .notify-btn {
+        display: inline-block;
+        background: #14b8a6;
+        color: white;
+        text-decoration: none;
+        padding: 15px 35px;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .notify-btn:hover {
+        transform: translateY(-3px);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+        <div class="container nav-content">
+        <div class="logo">
+            <img src="./images/susupal.png" alt="SusuPal Logo">
+        </div>
+        
+        <div class="nav-links">
+        <a href="./index.html">Home</a>
+        </div>
+        </div>
+        </nav>  
+   
+
+        <section class="hero">
+            <div class="container hero-content">
+            
+            <div>
+            <h1>Group Savings</h1>
+            
+            <p>
+                Save together, stay accountable, and achieve shared financial goals with SusuPal.
+                Our modern digital group savings platform helps families, friends, teams, associations, 
+                and communities contribute collectively, track progress transparently, and reach their savings targets with confidence and ease.
+            </p>
+            
+            <a href="https://forms.gle/B5yHaE7jQzzhUT1x8" class="btn btn-primary">
+                Join the Waitlist
+            </a>
+            
+            </div>
+            
+            <div class="hero-image">
+              <img class="phone" src="./images/group-savings.jpg" alt="">
+            </div>
+            
+            </div>
+            </section>
+
+    <footer class="footer" id="contact">
+      <div class="container footer-grid">
+        <div>
+          <div class="logo">
+            <img src="./images/susupallogotwo.png" alt="SusuPal Logo">
+          </div>
+          <br />
+          <p>Digital savings platform.</p>
+        </div>
+
+        <div>
+          <h4>Company</h4>
+          <br />
+          <a href="./home.html">About</a>
+          <a href="https://virallink.digital/careers">Careers</a>
+          <a href="https://virallink.digital/">Partners</a>
+        </div>
+
+        <div>
+          <h4>Product</h4>
+          <br />
+          <a href="./home.html">Personal Savings</a>
+          <a href="https://forms.gle/jai2b8yknc6JZPwK9">Group Savings</a>
+        </div>
+
+        <div>
+          <h4>Contact</h4>
+          <br />
+          <a href="mail: info.susupal@gmail.com">info.susupal@gmail.com</a>
+          <a href="#">+233 XXX XXX XXX</a>
+          <a href="#">Accra, Ghana</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
